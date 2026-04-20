@@ -296,6 +296,15 @@ const ResultsView = ({ result, studentName, onReset }) => {
     return 'text-red-400';
   };
 
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    if (result.evaluation.improvedEssay) {
+      navigator.clipboard.writeText(result.evaluation.improvedEssay);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   return (
     <div className="min-h-screen pt-8 pb-20 px-4 sm:px-6 max-w-5xl mx-auto animate-fade-in w-full">
       <div className="flex justify-between items-center mb-10 border-b border-gray-800 pb-6">
@@ -345,7 +354,9 @@ const ResultsView = ({ result, studentName, onReset }) => {
       {/* Category Breakdown */}
       <h3 className="text-2xl font-serif font-bold text-offwhite mb-6">Category Breakdown</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 bg-surface p-6 rounded-2xl border border-gray-800">
-        {Object.entries(result.evaluation).map(([category, data]) => (
+        {Object.entries(result.evaluation)
+          .filter(([key]) => key !== 'improvedEssay')
+          .map(([category, data]) => (
           <CategoryCard key={category} category={category} data={data} />
         ))}
       </div>
@@ -380,6 +391,24 @@ const ResultsView = ({ result, studentName, onReset }) => {
               </li>
             ))}
           </ul>
+        </div>
+      </div>
+
+      {/* Improved Essay Section */}
+      <div className="mb-16">
+        <h3 className="text-2xl font-serif font-bold text-offwhite mb-6 flex items-center">
+           ✨ AI-Improved Version of Your Essay
+        </h3>
+        <div className="relative bg-surface border border-gray-700 rounded-2xl p-6 md:p-8 shadow-lg">
+          <button 
+            onClick={handleCopy}
+            className="absolute top-4 right-4 bg-gold hover:bg-yellow-500 text-navy px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-300"
+          >
+            {copied ? 'Copied!' : 'Copy to Clipboard'}
+          </button>
+          <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap max-h-[500px] overflow-y-auto pr-4 custom-scrollbar">
+            {result.evaluation.improvedEssay}
+          </div>
         </div>
       </div>
 
@@ -463,7 +492,8 @@ function App() {
               "structure": { "score": 70, "reasoning": "The essay lacks a bit of logical flow in the middle section. Transitions between ideas could be smoother.", "errors": ["Weak transition to main point"] },
               "clarity": { "score": 75, "reasoning": "Overall message is understandable, but some sentences are overly complex and detract from the main idea.", "errors": ["Wordy phrasing"] },
               "argument": { "score": 65, "reasoning": "The thesis is present but its support is relatively weak. More concrete evidence is needed.", "errors": ["Lack of citation", "Weak supporting evidence"] },
-              "tone": { "score": 85, "reasoning": "Tone is appropriately formal and academic. Good use of formal vocabulary.", "errors": [] }
+              "tone": { "score": 85, "reasoning": "Tone is appropriately formal and academic. Good use of formal vocabulary.", "errors": [] },
+              "improvedEssay": "Title: The Future of Academic Integrity in the Age of AI\n\nThe integration of Artificial Intelligence into academic workflows presents both unprecedented opportunities and significant challenges. While AI can serve as a powerful tool for research and brainstorming, its potential for misuse necessitates a robust reassessment of our current integrity frameworks. \n\nFirstly, the clarity of academic expectations must be sharpened. Students often struggle not with a desire to deceive, but with a lack of understanding regarding what constitutes 'original work' when interacting with generative tools. Therefore, institutions should provide explicit guidelines that distinguish between ethical assistance—such as grammar checking or structural suggestions—and unethical substitution.\n\nFurthermore, the focus of assessment should shift from final products to the process of creation. By incorporating more reflective assignments and oral examinations, educators can better gauge a student's genuine engagement with the material. This holistic approach not only mitigates the risk of plagiarism but also fosters a more profound learning experience.\n\nIn conclusion, while AI is a transformative force, it does not have to be a destructive one. Through clear communication and innovative pedagogy, we can preserve the core values of scholarship while embracing the technological advancements of the 21st century."
             },
             "strengths": ["Strong academic tone maintained throughout", "Good vocabulary usage", "Clear introduction section"],
             "topSuggestions": ["Include more concrete examples to support your argument", "Break down complex sentences for better readability", "Work on transition words between structural paragraphs"],
