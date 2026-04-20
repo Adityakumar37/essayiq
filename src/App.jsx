@@ -97,6 +97,7 @@ const SubmissionForm = ({ onNavigate, onSubmit }) => {
     name: '',
     email: '',
     mode: 'ai_rubric',
+    purpose: 'exam',
     essay: ''
   });
   
@@ -171,6 +172,25 @@ const SubmissionForm = ({ onNavigate, onSubmit }) => {
             >
               <option value="ai_rubric">Essay Evaluation (AI Rubric)</option>
               <option value="marks" disabled>Marks Evaluation — Coming Soon</option>
+            </select>
+            <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none" />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-offwhite">Review Purpose</label>
+          <div className="relative">
+            <select 
+              name="purpose"
+              value={formData.purpose}
+              onChange={handleChange}
+              className="w-full bg-navy border border-gray-700 rounded-lg px-4 py-3 text-offwhite appearance-none focus:outline-none focus:border-gold transition-colors"
+            >
+              <option value="exam">Exam Submission</option>
+              <option value="teacher">Send to Teacher / Professor</option>
+              <option value="job">Job Application Cover Letter</option>
+              <option value="college">College Application Essay</option>
+              <option value="practice">Personal Practice</option>
             </select>
             <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none" />
           </div>
@@ -399,7 +419,7 @@ function App() {
     try {
       // The user specified to call a webhook POST. 
       // We will replace with user's webhook URL as per instructions: "YOUR_N8N_WEBHOOK_URL_HERE"
-      const response = await fetch('http://localhost:5678/webhook/submit-essay', {
+      const response = await fetch('http://localhost:5678/webhook-test/submit-essay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -407,7 +427,8 @@ function App() {
         body: JSON.stringify({
           studentName: formData.name,
           studentEmail: formData.email,
-          essayText: formData.essay
+          essayText: formData.essay,
+          reviewPurpose: formData.purpose
         })
       });
 
