@@ -52,17 +52,12 @@ const LandingPage = ({ onNavigate }) => {
           >
             Evaluate Essay
           </button>
-          <div className="relative w-full sm:w-auto">
-            <button 
-              disabled
-              className="w-full sm:w-auto px-8 py-4 border border-muted text-muted font-bold rounded-lg cursor-not-allowed bg-transparent"
-            >
-              Marks Evaluation
-            </button>
-            <span className="absolute -top-3 -right-3 bg-navy text-gold text-xs font-bold px-2 py-1 border border-gold rounded-full shadow-lg">
-              Coming Soon
-            </span>
-          </div>
+          <button 
+            onClick={() => onNavigate('form', 'marks')}
+            className="w-full sm:w-auto px-8 py-4 border border-gold text-gold hover:bg-gold hover:text-navy font-bold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-[0_0_15px_rgba(232,184,75,0.2)]"
+          >
+            Marks Evaluation
+          </button>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
@@ -92,11 +87,11 @@ const LandingPage = ({ onNavigate }) => {
 };
 
 // --- View 2: Submission Form ---
-const SubmissionForm = ({ onNavigate, onSubmit }) => {
+const SubmissionForm = ({ onNavigate, onSubmit, initialMode = 'ai_rubric' }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    mode: 'ai_rubric',
+    mode: initialMode,
     purpose: 'exam',
     essay: ''
   });
@@ -171,7 +166,7 @@ const SubmissionForm = ({ onNavigate, onSubmit }) => {
               className="w-full bg-navy border border-gray-700 rounded-lg px-4 py-3 text-offwhite appearance-none focus:outline-none focus:border-gold transition-colors"
             >
               <option value="ai_rubric">Essay Evaluation (AI Rubric)</option>
-              <option value="marks" disabled>Marks Evaluation — Coming Soon</option>
+              <option value="marks">Marks Evaluation (Direct Scoring)</option>
             </select>
             <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none" />
           </div>
@@ -432,9 +427,11 @@ function App() {
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
   const [studentInfo, setStudentInfo] = useState({ name: '', email: '' });
+  const [initialMode, setInitialMode] = useState('ai_rubric');
 
-  const handleNavigate = (newView) => {
+  const handleNavigate = (newView, mode = 'ai_rubric') => {
     setView(newView);
+    setInitialMode(mode);
     window.scrollTo(0, 0);
   };
 
@@ -457,7 +454,8 @@ function App() {
           studentName: formData.name,
           studentEmail: formData.email,
           essayText: formData.essay,
-          reviewPurpose: formData.purpose
+          reviewPurpose: formData.purpose,
+          evaluationMode: formData.mode
         })
       });
 
@@ -516,7 +514,11 @@ function App() {
       )}
 
       {view === 'form' && (
-        <SubmissionForm onNavigate={handleNavigate} onSubmit={handleFormSubmit} />
+        <SubmissionForm 
+          onNavigate={handleNavigate} 
+          onSubmit={handleFormSubmit} 
+          initialMode={initialMode}
+        />
       )}
 
       {view === 'loading' && (
